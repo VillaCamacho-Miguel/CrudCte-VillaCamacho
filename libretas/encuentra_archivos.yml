@@ -1,0 +1,11 @@
+- name: Crear archivos en una ruta específica a partir de un arreglo de nombres usando shell
+  hosts: containers
+  gather_facts: no
+  vars:
+    ruta_destino: ""
+    nombres_archivos: []
+
+  tasks:
+    - name: Crear archivos a partir del arreglo de nombres usando el comando touch
+      shell: "touch {{ ruta_destino }}/{{ item }}"
+      loop: "{{ nombres_archivos }}"

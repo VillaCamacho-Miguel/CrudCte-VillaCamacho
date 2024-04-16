@@ -1,0 +1,52 @@
+- name: Recopilar información del sistema
+  hosts: containers
+  gather_facts: false
+  tasks:
+    - name: Obtener la versión del SO
+      shell: uname -a
+      register: so_version
+
+    - name: Obtener el hostname
+      shell: hostname
+      register: hostname
+    
+    - name: Obtener la ip
+      shell: hostname -I
+      register: ip
+
+    - name: Obtener la fecha actual
+      shell: date
+      register: fecha
+
+    - name: Verificar versión de Python
+      shell: python --version || python3 --version
+      register: python_version
+      ignore_errors: true
+
+    - name: Verificar versión de Java
+      shell: java -version 2>&1 | head -n 1
+      register: java_version
+      ignore_errors: true
+
+    - name: Mostrar la versión del SO
+      debug:
+        msg: "Versión del SO: {{ so_version.stdout }}"
+
+    - name: Mostrar el hostname
+      debug:
+        msg: "Hostname: {{ hostname.stdout }}"
+    - name: Mostrar la ip
+      debug:
+        msg: "Ip: {{ip.stdout}}"
+    
+    - name: Mostrar la fecha actual
+      debug:
+        msg: "Fecha actual: {{ fecha.stdout }}"
+
+    - name: Mostrar versión de Python
+      debug:
+        msg: "Versión de Python: {{ python_version.stderr if python_version.rc != 0 else python_version.stdout }}"
+
+    - name: Mostrar versión de Java
+      debug:
+        msg: "Versión de Java: {{ java_version.stdout }}"

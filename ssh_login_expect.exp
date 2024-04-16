@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+set ip_server_login [lindex $argv 0]
+set password "123"
+
+spawn ssh -o StrictHostKeyChecking=no  root@$ip_server_login 
+expect "password:"
+
+send "$password\r"
+
+interact

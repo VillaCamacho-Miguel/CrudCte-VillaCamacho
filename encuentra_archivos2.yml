@@ -1,0 +1,19 @@
+- name: Buscar múltiples archivos en una ruta específica usando el módulo shell
+  hosts: containers
+  become: yes
+  gather_facts: no
+  vars:
+    ruta: "{{ ruta }}"
+    patrones: "{{ patrones }}"
+
+  tasks:
+    - name: Buscar archivos por patrones
+      shell: 
+        for pattern in {{ patrones.split(',') }}; do
+          find {{ ruta }} -type f -name "$pattern";
+        done
+      register: resultado_busqueda
+
+    - name: Mostrar resultados de la búsqueda
+      debug:
+        msg: "{{ resultado_busqueda.stdout }}"

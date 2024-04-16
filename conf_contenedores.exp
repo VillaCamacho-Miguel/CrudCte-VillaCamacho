@@ -1,0 +1,58 @@
+#!/usr/bin/expect
+  
+# Define el nombre del contenedor
+set container [lindex $argv 0]
+
+# Ejecuta docker exec para interactuar con el contenedor
+spawn docker exec -it $container bash
+
+# Espera a que la shell esté lista
+expect "#"
+
+# Ejecuta el comando
+send {apt update; apt install python3 -y;     apt install ssh -y;     apt install vim -y;     echo -e "123\n123" | passwd root;      service ssh restart; groupadd sftp_only; useradd -m -g sftp_only -s /sbin/nologin ftp_usuario ; echo -e "123\n123" | passwd ftp_usuario ;
+chown root:root /home/ftp_usuario ; chmod 755 /home/ftp_usuario ; mkdir /home/ftp_usuario/files ; chown ftp_usuario:sftp_only /home/ftp_usuario/files;
+echo -e "
+\nMatch LocalPort 50067
+    ForceCommand internal-sftp
+    PasswordAuthentication Yes
+    PasswordAuthentication yes
+    PermitTunnel no
+    AllowAgentForwarding no
+    AllowTcpForwarding no
+    X11Forwarding no
+" >> /etc/ssh/sshd_config;
+
+echo -e "
+\nMatch LocalPort 50067
+    ForceCommand internal-sftp
+    PasswordAuthentication yes
+    PermitTunnel no
+    AllowAgentForwarding no
+    AllowTcpForwarding no
+    X11Forwarding no
+" >> /etc/ssh/sshd_config;
+
+echo -e "
+\nMatch Group sftp_only
+    ChrootDirectory %h
+    ForceCommand internal-sftp
+    AllowTCPForwarding no
+    X11Forwarding no
+" >> /etc/ssh/sshd_config ; 
+
+echo -e "
+\nMatch User root
+        AuthenticationMethods password
+" >> /etc/ssh/sshd_config;
+
+echo -e "PermitRootLogin yes\nClientAliveInterval 600\nClientAliveCountMax 0" >> /etc/ssh/sshd_config; service ssh restart;}
+
+
+
+# Sale del contenedor
+send "exit\r"
+
+# Finaliza expect
+expect eof
+

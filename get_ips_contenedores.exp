@@ -1,0 +1,15 @@
+set container [lindex $argv 0]
+
+# Ejecuta docker exec para interactuar con el contenedor
+spawn docker exec -it $container bash
+
+# Espera a que la shell esté lista
+expect "#"
+
+send {hostname; hostname -I;}
+
+
+send "exit\r"
+
+expect eof
+
